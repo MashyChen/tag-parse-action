@@ -41,14 +41,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const github = __importStar(require("@actions/github"));
 const utils_1 = require("./utils");
-const axios_1 = __importDefault(require("axios"));
 // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
 const ref = github.context.ref;
 const pushPayload = github.context.payload;
@@ -78,20 +74,22 @@ function run() {
                     pusherName
                 };
                 console.log('tagName: ', tagName);
-                const ret = yield (0, axios_1.default)({
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/vnd.github.v3+json',
-                        'content-type': 'application/json',
-                        Authorization: `Bearer ${githubToken}`
-                    },
-                    url: tagUrl,
-                    data: {
-                        tag_name: tagName,
-                        body: JSON.stringify(tagMessage)
-                    }
-                });
-                console.log('ret------: ', ret.data);
+                console.log('tagUrl: ', tagUrl);
+                console.log('tagMessage: ', tagMessage);
+                // const ret = await axios({
+                //   method: 'POST',
+                //   headers: {
+                //     Accept: 'application/vnd.github.v3+json',
+                //     'content-type': 'application/json',
+                //     Authorization: `Bearer ${githubToken}`
+                //   },
+                //   url: tagUrl,
+                //   data: {
+                //     tag_name: tagName,
+                //     body: JSON.stringify(tagMessage)
+                //   }
+                // })
+                // console.log('ret------: ', ret.data)
             }
             if (type === 'parse') {
                 const { release } = pushPayload || {};
