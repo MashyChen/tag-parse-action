@@ -43,6 +43,7 @@ async function run(): Promise<void> {
       console.log('tagName: ', tagName)
       console.log('tagUrl: ', tagUrl)
       console.log('tagMessage: ', tagMessage)
+      console.log('githubToken:***** ', githubToken)
       const ret = await axios({
         method: 'POST',
         headers: {
