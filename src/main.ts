@@ -41,20 +41,22 @@ async function run(): Promise<void> {
         pusherName
       }
       console.log('tagName: ', tagName)
-      const ret = await axios({
-        method: 'POST',
-        headers: {
-          Accept: 'application/vnd.github.v3+json',
-          'content-type': 'application/json',
-          Authorization: `Bearer ${githubToken}`
-        },
-        url: tagUrl,
-        data: {
-          tag_name: tagName,
-          body: JSON.stringify(tagMessage)
-        }
-      })
-      console.log('ret------: ', ret.data)
+      console.log('tagUrl: ', tagUrl)
+      console.log('tagMessage: ', tagMessage)
+      // const ret = await axios({
+      //   method: 'POST',
+      //   headers: {
+      //     Accept: 'application/vnd.github.v3+json',
+      //     'content-type': 'application/json',
+      //     Authorization: `Bearer ${githubToken}`
+      //   },
+      //   url: tagUrl,
+      //   data: {
+      //     tag_name: tagName,
+      //     body: JSON.stringify(tagMessage)
+      //   }
+      // })
+      // console.log('ret------: ', ret.data)
     }
     if (type === 'parse') {
       const {release} = pushPayload || {}
