@@ -74,6 +74,7 @@ function run() {
                 const { name: pusherName } = pusher || {};
                 const [, outRepository] = full_name.split('/');
                 const syncBranch = (0, utils_1.getSyncBranch)(ref);
+                console.log('topRepository: ', topRepository);
                 const tagUrl = (0, utils_1.getTagUrl)(topRepository || full_name);
                 const timesTamp = (0, utils_1.formatTime)(new Date(), '{yy}-{mm}-{dd}-{h}-{i}-{s}');
                 const tagName = `${outRepository}/${syncBranch}/${timesTamp}`;
@@ -87,7 +88,7 @@ function run() {
                 console.log('tagName: ', tagName);
                 console.log('tagUrl: ', tagUrl);
                 console.log('tagMessage: ', tagMessage);
-                console.log('githubToken:***** ', githubToken);
+                console.log('githubToken:***** ', `Bearer ${githubToken}`);
                 const ret = yield (0, axios_1.default)({
                     method: 'POST',
                     headers: {

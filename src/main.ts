@@ -29,6 +29,7 @@ async function run(): Promise<void> {
       const [, outRepository] = full_name.split('/')
       const syncBranch = getSyncBranch(ref)
 
+      console.log('topRepository: ', topRepository)
       const tagUrl = getTagUrl(topRepository || full_name)
       const timesTamp = formatTime(new Date(), '{yy}-{mm}-{dd}-{h}-{i}-{s}')
 
@@ -43,7 +44,7 @@ async function run(): Promise<void> {
       console.log('tagName: ', tagName)
       console.log('tagUrl: ', tagUrl)
       console.log('tagMessage: ', tagMessage)
-      console.log('githubToken:***** ', githubToken)
+      console.log('githubToken:***** ',  `Bearer ${githubToken}`)
       const ret = await axios({
         method: 'POST',
         headers: {
