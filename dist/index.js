@@ -73,16 +73,14 @@ function run() {
                 const { full_name } = repository || {};
                 const { name: pusherName } = pusher || {};
                 const [, outRepository] = full_name.split('/');
-                const syncBranch = (0, utils_1.getSyncBranch)(ref);
                 console.log('topRepository: ', topRepository);
                 const tagUrl = (0, utils_1.getTagUrl)(topRepository || full_name);
                 const timesTamp = (0, utils_1.formatTime)(new Date(), '{yy}-{mm}-{dd}-{h}-{i}-{s}');
-                const tagName = `${outRepository}/${syncBranch}/${timesTamp}`;
-                // `release/${timesTamp}&branch=${branch}&syncBranch=${syncBranch}&repository=${outRepository}`
+                const tagName = `${outRepository}/${branch}/${timesTamp}`;
                 const tagMessage = {
                     branch,
-                    syncBranch,
                     repository: outRepository,
+                    pushRef: (0, utils_1.getEnvPathByBranch)(branch),
                     pusherName
                 };
                 console.log('tagName: ', tagName);
@@ -109,14 +107,14 @@ function run() {
                 const { body } = release || {};
                 const tagInfo = JSON.parse(body);
                 console.log('tagInfo: ', tagInfo);
-                const { branch: tagBranch, syncBranch: tagSyncBranch, repository: tagRepository, pusherName } = tagInfo || {};
-                console.log('branch: ', tagSyncBranch);
-                console.log('syncBranch----', tagBranch);
+                const { branch: tagBranch, repository: tagRepository, pusherName, pushRef, } = tagInfo || {};
+                console.log('Branch----', tagBranch);
                 console.log('repository----', tagRepository);
                 console.log('pusherName----', pusherName);
+                console.log('pushRef----', pushRef);
                 core.exportVariable('BRANCH', tagBranch);
-                core.exportVariable('syncBranch', tagSyncBranch);
                 core.exportVariable('REPOSITORY', tagRepository);
+                core.exportVariable('PUSHREF', pushRef);
             }
         }
         catch (error) {
@@ -138,7 +136,7 @@ run();
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable github/array-foreach */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.formatTime = exports.getSyncBranch = exports.getTagUrl = exports.getPraseByTag = exports.getBranchByTag = exports.getBranchByHead = void 0;
+exports.formatTime = exports.getTagUrl = exports.getEnvPathByBranch = exports.getSyncBranch = exports.getBranchByTag = exports.getBranchByHead = void 0;
 const getBranchByHead = (ref) => {
     if (ref.includes('refs/heads/')) {
         return ref.replace('refs/heads/', '');
@@ -155,27 +153,6 @@ const getBranchByTag = (ref) => {
     return '';
 };
 exports.getBranchByTag = getBranchByTag;
-const getPraseByTag = (ref) => {
-    if (ref.includes('refs/tags/release/')) {
-        const willString = ref.replace('refs/tags/release/', '');
-        const arr = (willString || '').split('&');
-        const obj = {};
-        arr.forEach(item => {
-            const [key, value] = (item || '').split('=');
-            if (value) {
-                obj[key] = value;
-            }
-        });
-        return obj;
-    }
-    return {};
-};
-exports.getPraseByTag = getPraseByTag;
-const getTagUrl = (repository) => {
-    return `https://api.github.com/repos/${repository}/releases`;
-};
-exports.getTagUrl = getTagUrl;
-// release/dingding-dev-v0.1.3-2021-12-06
 const getSyncBranch = (ref) => {
     if (ref.includes('refs/heads/')) {
         return ref.replace('refs/heads/', '');
@@ -188,6 +165,17 @@ const getSyncBranch = (ref) => {
     return '';
 };
 exports.getSyncBranch = getSyncBranch;
+const getEnvPathByBranch = (branch) => {
+    if (['dev', 'uat', 'prod'].includes(branch)) {
+        return branch;
+    }
+    return 'dev';
+};
+exports.getEnvPathByBranch = getEnvPathByBranch;
+const getTagUrl = (repository) => {
+    return `https://api.github.com/repos/${repository}/releases`;
+};
+exports.getTagUrl = getTagUrl;
 /**
  * 格式化时间
  *
