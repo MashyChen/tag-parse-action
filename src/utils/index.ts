@@ -17,26 +17,6 @@ export const getBranchByTag = (ref: string): string => {
   return ''
 }
 
-export const getPraseByTag = (ref: string): {} => {
-  if (ref.includes('refs/tags/release/')) {
-    const willString = ref.replace('refs/tags/release/', '')
-    const arr = (willString || '').split('&')
-    const obj: any = {}
-    arr.forEach(item => {
-      const [key, value] = (item || '').split('=')
-      if (value) {
-        obj[key] = value
-      }
-    })
-    return obj
-  }
-  return {}
-}
-export const getTagUrl = (repository: string): string => {
-  return `https://api.github.com/repos/${repository}/releases`
-}
-
-// release/dingding-dev-v0.1.3-2021-12-06
 export const getSyncBranch = (ref: string): string => {
   if (ref.includes('refs/heads/')) {
     return ref.replace('refs/heads/', '')
@@ -48,6 +28,18 @@ export const getSyncBranch = (ref: string): string => {
   }
   return ''
 }
+
+export const getEnvPathByBranch = (branch: string): string => {
+  if (['dev', 'uat', 'prod'].includes(branch)) {
+    return branch
+  }
+  return 'dev'
+}
+
+export const getTagUrl = (repository: string): string => {
+  return `https://api.github.com/repos/${repository}/releases`
+}
+
 /**
  * 格式化时间
  *

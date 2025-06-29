@@ -4,7 +4,7 @@ import {
   formatTime,
   getBranchByHead,
   getBranchByTag,
-  getSyncBranch,
+  getEnvPathByBranch,
   getTagUrl
 } from './utils'
 
@@ -27,18 +27,16 @@ async function run(): Promise<void> {
       const {full_name} = repository || {}
       const {name: pusherName} = pusher || {}
       const [, outRepository] = full_name.split('/')
-      const syncBranch = getSyncBranch(ref)
 
       console.log('topRepository: ', topRepository)
       const tagUrl = getTagUrl(topRepository || full_name)
       const timesTamp = formatTime(new Date(), '{yy}-{mm}-{dd}-{h}-{i}-{s}')
 
-      const tagName = `${outRepository}/${syncBranch}/${timesTamp}`
-      // `release/${timesTamp}&branch=${branch}&syncBranch=${syncBranch}&repository=${outRepository}`
+      const tagName = `${outRepository}/${branch}/${timesTamp}`
       const tagMessage = {
         branch,
-        syncBranch,
         repository: outRepository,
+        pushRef: getEnvPathByBranch(branch),
         pusherName
       }
       console.log('tagName: ', tagName)
@@ -67,18 +65,18 @@ async function run(): Promise<void> {
       console.log('tagInfo: ', tagInfo)
       const {
         branch: tagBranch,
-        syncBranch: tagSyncBranch,
         repository: tagRepository,
-        pusherName
+        pusherName,
+        pushRef,
       } = tagInfo || {}
-      console.log('branch: ', tagSyncBranch)
-      console.log('syncBranch----', tagBranch)
+      console.log('Branch----', tagBranch)
       console.log('repository----', tagRepository)
       console.log('pusherName----', pusherName)
+      console.log('pushRef----', pushRef)
 
       core.exportVariable('BRANCH', tagBranch)
-      core.exportVariable('syncBranch', tagSyncBranch)
       core.exportVariable('REPOSITORY', tagRepository)
+      core.exportVariable('PUSHREF', pushRef)
     }
   } catch (error) {
     const e: any = error
