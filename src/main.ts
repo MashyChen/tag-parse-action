@@ -5,6 +5,7 @@ import {
   getBranchByHead,
   getBranchByTag,
   getEnvPathByBranch,
+  getEnvValueByBranch,
   getTagUrl
 } from './utils'
 
@@ -32,12 +33,16 @@ async function run(): Promise<void> {
       const tagUrl = getTagUrl(topRepository || full_name)
       const timesTamp = formatTime(new Date(), '{yy}-{mm}-{dd}-{h}-{i}-{s}')
 
+      const envValue = getEnvValueByBranch(branch)
+      console.log('envValue: ', envValue)
+
       const tagName = `${outRepository}/${branch}/${timesTamp}`
       const tagMessage = {
         branch,
         repository: outRepository,
         pushRef: getEnvPathByBranch(branch),
-        pusherName
+        pusherName,
+        envValue
       }
       console.log('tagName: ', tagName)
       console.log('tagUrl: ', tagUrl)
@@ -68,15 +73,20 @@ async function run(): Promise<void> {
         repository: tagRepository,
         pusherName,
         pushRef,
+        envValue,
       } = tagInfo || {}
       console.log('Branch----', tagBranch)
       console.log('repository----', tagRepository)
       console.log('pusherName----', pusherName)
       console.log('pushRef----', pushRef)
+      console.log('envValue---- ', JSON.stringify(envValue))
 
       core.exportVariable('BRANCH', tagBranch)
       core.exportVariable('REPOSITORY', tagRepository)
       core.exportVariable('PUSHREF', pushRef)
+      Object.keys(envValue).forEach((key) => {
+        core.exportVariable(key.toUpperCase(), envValue[key as keyof typeof envValue])
+      })
     }
   } catch (error) {
     const e: any = error

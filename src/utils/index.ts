@@ -84,3 +84,30 @@ export const formatTime = (dateTime: any, cFormat: string): string => {
   })
   return time_str
 }
+
+export const getEnvValueByBranch = (branch: string): any => {
+  const envValueMap = {
+    dev: {
+      name: 'cms-dev',
+      active: 'dev',
+      image: 'registry.digitalocean.com/seechange/cms:dev',
+      PORT: 3000,
+      OUT_PORT: 13003
+    },
+    uat: {
+      name: 'cms-uat',
+      active: 'uat',
+      image: 'registry.digitalocean.com/seechange/cms:uat',
+      PORT: 3000,
+      OUT_PORT: 3003
+    },
+    prod: {
+      name: 'cms',
+      active: 'prod',
+      image: 'registry.digitalocean.com/seechange/cms',
+      PORT: 3000,
+      OUT_PORT: 3003
+    }
+  }
+  return envValueMap?.[branch as keyof typeof envValueMap] || envValueMap.dev
+}
