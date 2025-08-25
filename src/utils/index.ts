@@ -107,13 +107,6 @@ export const getEnvValueByBranch = (repository: string, branch: string): any => 
         PORT: 3000,
         OUT_PORT: 3003
       },
-      prod: {
-        NAME: 'cms',
-        ACTIVE: 'prod',
-        IMAGE: 'registry.digitalocean.com/seechange/cms',
-        PORT: 3000,
-        OUT_PORT: 3003
-      }
     },
     [RepositoryEnum.SPEAKING_EXERCISE_BACKEND]: {
       dev: {
