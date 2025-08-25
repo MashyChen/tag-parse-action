@@ -33,8 +33,13 @@ async function run(): Promise<void> {
       const tagUrl = getTagUrl(topRepository || full_name)
       const timesTamp = formatTime(new Date(), '{yy}-{mm}-{dd}-{h}-{i}-{s}')
 
-      const envValue = getEnvValueByBranch(branch)
+      const envValue = getEnvValueByBranch(outRepository, branch)
       console.log('envValue: ', envValue)
+
+      if (!envValue) {
+        core.setFailed(`${outRepository} ${branch} 环境变量不存在`)
+        return
+      }
 
       const tagName = `${outRepository}/${branch}/${timesTamp}`
       const tagMessage = {
@@ -85,7 +90,7 @@ async function run(): Promise<void> {
       core.exportVariable('REPOSITORY', tagRepository)
       core.exportVariable('PUSHREF', pushRef)
       Object.keys(envValue).forEach((key) => {
-        core.exportVariable(key.toUpperCase(), envValue[key as keyof typeof envValue])
+        core.exportVariable(key, envValue[key])
       })
     }
   } catch (error) {

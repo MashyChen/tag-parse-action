@@ -76,8 +76,12 @@ function run() {
                 console.log('topRepository: ', topRepository);
                 const tagUrl = (0, utils_1.getTagUrl)(topRepository || full_name);
                 const timesTamp = (0, utils_1.formatTime)(new Date(), '{yy}-{mm}-{dd}-{h}-{i}-{s}');
-                const envValue = (0, utils_1.getEnvValueByBranch)(branch);
+                const envValue = (0, utils_1.getEnvValueByBranch)(outRepository, branch);
                 console.log('envValue: ', envValue);
+                if (!envValue) {
+                    core.setFailed(`${outRepository} ${branch} 环境变量不存在`);
+                    return;
+                }
                 const tagName = `${outRepository}/${branch}/${timesTamp}`;
                 const tagMessage = {
                     branch,
@@ -120,7 +124,7 @@ function run() {
                 core.exportVariable('REPOSITORY', tagRepository);
                 core.exportVariable('PUSHREF', pushRef);
                 Object.keys(envValue).forEach((key) => {
-                    core.exportVariable(key.toUpperCase(), envValue[key]);
+                    core.exportVariable(key, envValue[key]);
                 });
             }
         }
@@ -227,31 +231,64 @@ const formatTime = (dateTime, cFormat) => {
     return time_str;
 };
 exports.formatTime = formatTime;
-const getEnvValueByBranch = (branch) => {
-    const envValueMap = {
-        dev: {
-            name: 'cms-dev',
-            active: 'dev',
-            image: 'registry.digitalocean.com/seechange/cms:dev',
-            PORT: 3000,
-            OUT_PORT: 13003
+var RepositoryEnum;
+(function (RepositoryEnum) {
+    RepositoryEnum["CMS_FRONTEND"] = "cms-frontend";
+    RepositoryEnum["SPEAKING_EXERCISE_BACKEND"] = "speaking-exercise-backend";
+})(RepositoryEnum || (RepositoryEnum = {}));
+const getEnvValueByBranch = (repository, branch) => {
+    const repositoryMap = {
+        [RepositoryEnum.CMS_FRONTEND]: {
+            dev: {
+                NAME: 'cms-dev',
+                ACTIVE: 'dev',
+                IMAGE: 'registry.digitalocean.com/seechange/cms:dev',
+                PORT: 3000,
+                OUT_PORT: 13003
+            },
+            uat: {
+                NAME: 'cms-uat',
+                ACTIVE: 'uat',
+                IMAGE: 'registry.digitalocean.com/seechange/cms:uat',
+                PORT: 3000,
+                OUT_PORT: 3003
+            },
+            prod: {
+                NAME: 'cms',
+                ACTIVE: 'prod',
+                IMAGE: 'registry.digitalocean.com/seechange/cms',
+                PORT: 3000,
+                OUT_PORT: 3003
+            }
         },
-        uat: {
-            name: 'cms-uat',
-            active: 'uat',
-            image: 'registry.digitalocean.com/seechange/cms:uat',
-            PORT: 3000,
-            OUT_PORT: 3003
-        },
-        prod: {
-            name: 'cms',
-            active: 'prod',
-            image: 'registry.digitalocean.com/seechange/cms',
-            PORT: 3000,
-            OUT_PORT: 3003
+        [RepositoryEnum.SPEAKING_EXERCISE_BACKEND]: {
+            dev: {
+                NAME: 'speaking-exercise-api-dev',
+                IMAGE: 'registry.digitalocean.com/seechange/speaking-exercise-api:dev',
+                ACTIVE: 'dev',
+                PORT: 9001,
+                OUT_PORT: 19001,
+                RUN_LOGS: '-m 1024m -e SPRING_PROFILES_ACTIVE=dev -v /home/forge/dev-speaking-exercise-api.seechange-edu.com/logs:/app/logs'
+            },
+            uat: {
+                NAME: 'speaking-exercise-api-uat',
+                IMAGE: 'registry.digitalocean.com/seechange/speaking-exercise-api:uat',
+                ACTIVE: 'uat',
+                PORT: 9001,
+                OUT_PORT: 9001,
+                RUN_LOGS: '-m 1024m -e SPRING_PROFILES_ACTIVE=uat -v /home/forge/uat-speaking-exercise-api.seechange-edu.com/logs:/app/logs'
+            }
         }
     };
-    return (envValueMap === null || envValueMap === void 0 ? void 0 : envValueMap[branch]) || envValueMap.dev;
+    const envValueMap = repositoryMap[repository] || null;
+    if (!envValueMap) {
+        return null;
+    }
+    const envValue = (envValueMap === null || envValueMap === void 0 ? void 0 : envValueMap[branch]) || envValueMap.dev;
+    if (!envValue) {
+        return null;
+    }
+    return envValue;
 };
 exports.getEnvValueByBranch = getEnvValueByBranch;
 
