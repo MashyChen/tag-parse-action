@@ -261,7 +261,7 @@ const getEnvValueByBranch = (repository, branch) => {
                 ACTIVE: 'dev',
                 PORT: 9001,
                 OUT_PORT: 19001,
-                RUN_LOGS: '-m 1024m -e SPRING_PROFILES_ACTIVE=dev -v /home/forge/dev-speaking-exercise-api.seechange-edu.com/logs:/app/logs'
+                RUN_ARGS: '-m 1024m -e SPRING_PROFILES_ACTIVE=dev -v /home/forge/dev-speaking-exercise-api.seechange-edu.com/logs:/app/logs'
             },
             uat: {
                 NAME: 'speaking-exercise-api-uat',
@@ -269,7 +269,7 @@ const getEnvValueByBranch = (repository, branch) => {
                 ACTIVE: 'uat',
                 PORT: 9001,
                 OUT_PORT: 9001,
-                RUN_LOGS: '-m 1024m -e SPRING_PROFILES_ACTIVE=uat -v /home/forge/uat-speaking-exercise-api.seechange-edu.com/logs:/app/logs'
+                RUN_ARGS: '-m 1024m -e SPRING_PROFILES_ACTIVE=uat -v /home/forge/uat-speaking-exercise-api.seechange-edu.com/logs:/app/logs'
             }
         }
     };
