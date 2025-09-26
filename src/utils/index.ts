@@ -30,10 +30,14 @@ export const getSyncBranch = (ref: string): string => {
 }
 
 export const getEnvPathByBranch = (branch: string): string => {
-  if (['dev', 'uat', 'prod'].includes(branch)) {
-    return branch
+  switch (branch) {
+    case 'dev':
+    case 'uat':
+    case 'prod':
+      return branch
+    default:
+      return 'dev'
   }
-  return 'dev'
 }
 
 export const getTagUrl = (repository: string): string => {
@@ -87,7 +91,10 @@ export const formatTime = (dateTime: any, cFormat: string): string => {
 
 enum RepositoryEnum {
   CMS_FRONTEND = 'cms-frontend',
-  SPEAKING_EXERCISE_BACKEND = 'speaking-exercise-backend'
+  CMS_BACKEND = 'cms-backend',
+  SPEAKING_EXERCISE_BACKEND = 'speaking-exercise-backend',
+  SPEAKING_EXERCISE_FRONTEND = 'speaking-exercise-frontend',
+  EVENT_BACKEND = 'event-backend'
 }
 
 export const getEnvValueByBranch = (repository: string, branch: string): any => {
@@ -108,6 +115,22 @@ export const getEnvValueByBranch = (repository: string, branch: string): any => 
         OUT_PORT: 3003
       },
     },
+    [RepositoryEnum.CMS_BACKEND]: {
+      dev: {
+        NAME: 'cms-api-dev',
+        ACTIVE: 'dev',
+        IMAGE: 'registry.digitalocean.com/seechange/cms-api:dev',
+        PORT: 9003,
+        OUT_PORT: 19003
+      },
+      uat: {
+        NAME: 'cms-api-uat',
+        ACTIVE: 'uat',
+        IMAGE: 'registry.digitalocean.com/seechange/cms-api:uat',
+        PORT: 9003,
+        OUT_PORT: 9003
+      }
+    },
     [RepositoryEnum.SPEAKING_EXERCISE_BACKEND]: {
       dev: {
         NAME: 'speaking-exercise-api-dev',
@@ -115,6 +138,8 @@ export const getEnvValueByBranch = (repository: string, branch: string): any => 
         ACTIVE: 'dev',
         PORT: 9001,
         OUT_PORT: 19001,
+        PORT1: 9002,
+        OUT_PORT1: 19002,
         RUN_ARGS: '-m 1024m -e SPRING_PROFILES_ACTIVE=dev -v /home/forge/dev-speaking-exercise-api.seechange-edu.com/logs:/app/logs'
       },
       uat: {
@@ -123,7 +148,41 @@ export const getEnvValueByBranch = (repository: string, branch: string): any => 
         ACTIVE: 'uat',
         PORT: 9001,
         OUT_PORT: 9001,
+        PORT1: 9002,
+        OUT_PORT1: 9002,
         RUN_ARGS: '-m 1024m -e SPRING_PROFILES_ACTIVE=uat -v /home/forge/uat-speaking-exercise-api.seechange-edu.com/logs:/app/logs'
+      }
+    },
+    [RepositoryEnum.SPEAKING_EXERCISE_FRONTEND]: {
+      dev: {
+        NAME: 'speaking-exercise-frontend-dev',
+        ACTIVE: 'dev',
+        IMAGE: 'registry.digitalocean.com/seechange/speaking-exercise-frontend:dev',
+        PORT: 3000,
+        OUT_PORT: 13000
+      },
+      uat: {
+        NAME: 'speaking-exercise-frontend-uat',
+        ACTIVE: 'uat',
+        IMAGE: 'registry.digitalocean.com/seechange/speaking-exercise-frontend',
+        PORT: 3000,
+        OUT_PORT: 3000
+      }
+    },
+    [RepositoryEnum.EVENT_BACKEND]: {
+      dev: {
+        NAME: 'portal-api-dev',
+        ACTIVE: 'dev',
+        IMAGE: 'registry.digitalocean.com/seechange/portal-api:dev',
+        PORT: 9002,
+        OUT_PORT: 19002
+      },
+      uat: {
+        NAME: 'portal-api-uat',
+        ACTIVE: 'uat',
+        IMAGE: 'registry.digitalocean.com/seechange/portal-api:uat',
+        PORT: 9002,
+        OUT_PORT: 9002
       }
     }
   }
